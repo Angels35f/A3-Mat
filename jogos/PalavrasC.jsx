@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "../src/styles/palavrasC.css";
+import "../src/styles/PalavrasC.css";
+
 
 const PalavrasC = () => {
   const [board, setBoard] = useState(
