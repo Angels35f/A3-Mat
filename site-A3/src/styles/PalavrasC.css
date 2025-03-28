@@ -1,0 +1,39 @@
+.game-container {
+  text-align: center;
+  margin: 20px;
+}
+
+.board {
+  display: grid;
+  grid-template-rows: repeat(5, 50px); /* 5 filas de 50px */
+  grid-template-columns: repeat(5, 50px); /* 5 columnas de 50px */
+  gap: 5px; /* Espaciado entre las celdas */
+  justify-content: center;
+  margin: 20px auto;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.cell input {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  border: none;
+  outline: none;
+  font-size: 18px;
+  background-color: transparent;
+}
+
+.cell input:focus {
+  background-color: #e0e0e0;
+}
