@@ -1,39 +1,50 @@
-.game-container {
+.crossword-container {
   text-align: center;
-  margin: 20px;
+  margin-top: 20px;
 }
 
-.board {
+.crossword-board {
   display: grid;
-  grid-template-rows: repeat(5, 50px); /* 5 filas de 50px */
-  grid-template-columns: repeat(5, 50px); /* 5 columnas de 50px */
-  gap: 5px; /* Espaciado entre las celdas */
-  justify-content: center;
-  margin: 20px auto;
+  grid-template-rows: repeat(12, 40px); 
+  grid-template-columns: repeat(12, 40px); 
+  gap: 2px; 
+  background-color: #f0f0f0;
+  padding: 10px;
+  position: relative;
 }
 
 .cell {
-  width: 50px;
-  height: 50px;
-  border: 1px solid #000;
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  background-color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  background-color: #f9f9f9;
-  cursor: pointer;
+  position: relative;
 }
 
 .cell input {
   width: 100%;
   height: 100%;
-  text-align: center;
   border: none;
-  outline: none;
+  text-align: center;
   font-size: 18px;
-  background-color: transparent;
+  text-transform: uppercase;
 }
 
 .cell input:focus {
-  background-color: #e0e0e0;
+  outline: 2px solid blue;
+}
+
+.cell .clue {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 12px;
+  color: black;
+}.timer {
+  font-size: 18px;
+  margin-bottom: 10px;
+  font-weight: bold;
 }

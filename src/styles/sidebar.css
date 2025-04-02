@@ -19,7 +19,8 @@
   padding: 10px;
 }
 
-.button-group button {
+.button-group button,
+.button-group a { /* Aplica estilos a botones y enlaces */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,12 +30,12 @@
   border: none;
   cursor: pointer;
   font-family: 'Comic Neue', cursive;
-  color: #264653 ;
-
+  color: #264653;
   font-size: 14px;
   transition: background-color 0.3s ease;
   padding: 10px 0;
   margin: 10px;
+  text-decoration: none; /* Elimina el subrayado de los enlaces */
 }
 
 .botão_1 {
@@ -49,6 +50,7 @@
   background-color: #D8BFD8;
 }
 
-.button-group button:hover {
+.button-group button:hover,
+.button-group a:hover { /* Aplica el efecto hover a botones y enlaces */
   opacity: 0.8;
 }
