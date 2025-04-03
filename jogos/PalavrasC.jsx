@@ -30,17 +30,31 @@ export default function Crossword() {
   }, [isRunning]);
 
   const handleChange = (index, value) => {
+    // Permitir apenas números de 0 a 9
+    if (!/^[0-9]$/.test(value) && value !== "") return;
+
     const newGrid = [...grid];
-    newGrid[index].value = value.toUpperCase().slice(0, 1); // Apenas uma letra em maiúscula
+    newGrid[index].value = value.slice(0, 1); // Apenas um dígito
     setGrid(newGrid);
 
-    // Validar automaticamente a linha e a coluna
+    // Validar automaticamente apenas a linha ou a coluna
     const cell = grid[index];
-    if (cell.row) {
-      checkLine(cell.row, newGrid);
-    }
-    if (cell.col) {
-      checkColumn(cell.col, newGrid);
+    if (cell.row && cell.col) {
+      const isLineComplete = newGrid
+        .filter((c) => c.row === cell.row && c.editable)
+        .every((c) => c.value !== ""); // Verifica se a linha está completa
+
+      if (isLineComplete) {
+        checkLine(cell.row, newGrid);
+      } else {
+        const isColumnComplete = newGrid
+          .filter((c) => c.col === cell.col && c.editable)
+          .every((c) => c.value !== ""); // Verifica se a coluna está completa
+
+        if (isColumnComplete) {
+          checkColumn(cell.col, newGrid);
+        }
+      }
     }
   };
 
@@ -48,6 +62,8 @@ export default function Crossword() {
     const lineCells = gridToCheck
       .filter((cell) => cell.row === row && cell.editable)
       .sort((a, b) => a.col - b.col);
+
+    if (lineCells.length <= 1) return;
 
     const areContiguous = lineCells.every(
       (cell, index) =>
@@ -59,6 +75,24 @@ export default function Crossword() {
 
     if (areContiguous && lineValue === correctValue) {
       alert(`A linha ${row} está correta!`);
+      // Adicionar a classe .correct às células da linha
+      const updatedGrid = [...grid];
+      lineCells.forEach((cell) => {
+        const cellElement = document.querySelector(
+          `.cell[data-row="${cell.row}"][data-col="${cell.col}"]`
+        );
+        if (cellElement) {
+          cellElement.classList.add("correct");
+        }
+        // Bloquear a célula
+        const cellIndex = grid.findIndex(
+          (c) => c.row === cell.row && c.col === cell.col
+        );
+        if (cellIndex !== -1) {
+          updatedGrid[cellIndex].editable = false;
+        }
+      });
+      setGrid(updatedGrid);
     }
   };
 
@@ -66,6 +100,8 @@ export default function Crossword() {
     const columnCells = gridToCheck
       .filter((cell) => cell.col === col && cell.editable)
       .sort((a, b) => a.row - b.row);
+
+    if (columnCells.length <= 1) return;
 
     const areContiguous = columnCells.every(
       (cell, index) =>
@@ -77,6 +113,24 @@ export default function Crossword() {
 
     if (areContiguous && columnValue === correctValue) {
       alert(`A coluna ${col} está correta!`);
+      // Adicionar a classe .correct às células da coluna
+      const updatedGrid = [...grid];
+      columnCells.forEach((cell) => {
+        const cellElement = document.querySelector(
+          `.cell[data-row="${cell.row}"][data-col="${cell.col}"]`
+        );
+        if (cellElement) {
+          cellElement.classList.add("correct");
+        }
+        // Bloquear a célula
+        const cellIndex = grid.findIndex(
+          (c) => c.row === cell.row && c.col === cell.col
+        );
+        if (cellIndex !== -1) {
+          updatedGrid[cellIndex].editable = false;
+        }
+      });
+      setGrid(updatedGrid);
     }
   };
 
@@ -95,12 +149,17 @@ export default function Crossword() {
 
   return (
     <div className="crossword-container">
-      <div className="timer">Tempo: {time} segundos</div>
+    <div className="timer">
+      Tempo: {String(Math.floor(time / 60)).padStart(2, "0")}:
+      {String(time % 60).padStart(2, "0")}
+    </div>
       <div className="crossword-board">
         {grid.map((cell, index) => (
           <div
             key={index}
             className="cell"
+            data-row={cell.row}
+            data-col={cell.col}
             style={{
               gridRow: cell.row,
               gridColumn: cell.col,
@@ -117,7 +176,7 @@ export default function Crossword() {
           </div>
         ))}
       </div>
-      <button onClick={validateAnswers}>Validar Respostas</button>
+      <button className="validar_resposta" onClick={validateAnswers}>Validar Respostas</button>
     </div>
   );
 }
