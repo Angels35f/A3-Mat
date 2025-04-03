@@ -18,13 +18,17 @@
   border-radius: 20px;
   padding: 10px;
 }
+.content_1 h2{
+  font-size: 20px;
+  margin: 5px 5px 0px 5px;
+}
 
 .button-group button,
-.button-group a { /* Aplica estilos a botones y enlaces */
+.button-group a { 
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100px;
+  justify-content: left;
+  width: 85%;
   height: 30px;
   border-radius: 10px;
   border: none;
@@ -33,9 +37,9 @@
   color: #264653;
   font-size: 14px;
   transition: background-color 0.3s ease;
-  padding: 10px 0;
+  padding: 10px 5px;
   margin: 10px;
-  text-decoration: none; /* Elimina el subrayado de los enlaces */
+  text-decoration: none; 
 }
 
 .botão_1 {
@@ -51,6 +55,13 @@
 }
 
 .button-group button:hover,
-.button-group a:hover { /* Aplica el efecto hover a botones y enlaces */
+.button-group a:hover { 
   opacity: 0.8;
+}
+.home{
+  display: flex;
+  margin-left: 50px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-bottom: 40px;
 }

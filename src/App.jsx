@@ -24,7 +24,7 @@ function App() {
                   path="/batalha-naval"
                   element={
                     <iframe
-                      src="/batalha/index.html" // Asegúrate de que esta ruta sea correcta
+                      src="/batalha/index.html"
                       title="Batalha Naval"
                       style={{
                         width: "100%",
