@@ -8,7 +8,7 @@
   grid-template-rows: repeat(12, 50px); 
   grid-template-columns: repeat(12, 50px); 
   gap: 2px; 
-  background-color: #b3f5b3;
+  background-color: #D6F5E3;
   padding: 10px;
   position: relative;
 }
@@ -43,6 +43,11 @@
   height: 42px;
   border-radius: 8px;
   outline: 1px solid blue;
+  transform: scale(1.05);
+  transition: 0.2s ease;
+  background-color: #cbe9d8;
+
+  
 }
 .cell.correct{
   border: 2px solid green;

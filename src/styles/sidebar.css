@@ -14,7 +14,7 @@
   flex-direction: column; 
   gap: 10px; 
   margin: 5px;
-  background-color: #FFC1A1;
+  background-color: #FFF1E6;
   border-radius: 20px;
   padding: 10px;
 }
@@ -43,21 +43,25 @@
 }
 
 .botão_1 {
-  background-color: #D8BFD8;
+  background-color: #7EC8E3;
 }
 
 .botão_2 {
-  background-color: #D8BFD8;
+  background-color: #7EC8E3;
 }
 
 .botão_3 {
-  background-color: #D8BFD8;
-}
+  background-color: #7EC8E3;
 
+}
 .button-group button:hover,
 .button-group a:hover { 
   opacity: 0.8;
+  transform: scale(1.05);
+  background-color: #fceabb;
+  transition: 0.3s ease;
 }
+
 .home{
   display: flex;
   margin-left: 50px;
