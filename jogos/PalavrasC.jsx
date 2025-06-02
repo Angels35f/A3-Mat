@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import Header from "../src/components/Header.jsx";
 import "../src/styles/PalavrasC.css";
 
 export default function Crossword() {
@@ -32,7 +32,7 @@ export default function Crossword() {
     // Número 3 - Horizontal
     { row: 9, col: 4, number: 5, editable: true, correctValue: "1", wordId: "5H" },
     { row: 9, col: 6, editable: true, correctValue: "2", wordId: "5H" },
-    { row: 9, col: 7, editable: true, correctValue: "5", wordId: ["5H,6V"] },
+    { row: 9, col: 7, editable: true, correctValue: "5", wordId: ["5H","6V"] },
     { row: 9, col: 8, editable: true, correctValue: "3", wordId: "5H" },
     { row: 9, col: 9, editable: true, correctValue: "8", wordId: ["5H","8V"] },
     { row: 9, col: 10, editable: true, correctValue: "5", wordId: "5H" },
@@ -62,8 +62,9 @@ export default function Crossword() {
     cells.map((cell) => ({ ...cell, value: "" }))
   );
 
+  const [showInstructions, setShowInstructions] = useState(true);
   const [time, setTime] = useState(0); // Tempo em segundos
-  const [isRunning, setIsRunning] = useState(true); // Estado do cronômetro
+  const [isRunning, setIsRunning] = useState(false); // Estado do cronômetro
 
   // Gerenciar o cronômetro
   useEffect(() => {
@@ -106,14 +107,25 @@ export default function Crossword() {
     const input = cellsInWord.map((c) => c.value).join("");
     const solution = cellsInWord.map((c) => c.correctValue).join("");
   
+    const updatedGrid = [...grid];
+  
+    cellsInWord.forEach((cell) => {
+      const cellElement = document.querySelector(
+        `.cell[data-row="${cell.row}"][data-col="${cell.col}"]`
+      );
+      if (cellElement) {
+        
+        cellElement.classList.remove("correct", "incorrect");
+      }
+    });
+  
     if (input === solution) {
-      const updatedGrid = [...grid];
       cellsInWord.forEach((cell) => {
         const cellElement = document.querySelector(
           `.cell[data-row="${cell.row}"][data-col="${cell.col}"]`
         );
         if (cellElement) cellElement.classList.add("correct");
-  
+
         const idx = updatedGrid.findIndex(
           (c) => c.row === cell.row && c.col === cell.col
         );
@@ -121,8 +133,16 @@ export default function Crossword() {
           updatedGrid[idx].editable = false;
         }
       });
-      setGrid(updatedGrid);
+    } else {
+      cellsInWord.forEach((cell) => {
+        const cellElement = document.querySelector(
+          `.cell[data-row="${cell.row}"][data-col="${cell.col}"]`
+        );
+        if (cellElement) cellElement.classList.add("incorrect");
+      });
     }
+  
+    setGrid(updatedGrid);
   };
   
   const validateAnswers = () => {
@@ -138,83 +158,120 @@ export default function Crossword() {
     }
   };
     return (
-      <div className="crossword-container">
-        <Link to="/" className="back-home-button">Home</Link>
-        {/* Temporizador */}
-        <div className="timer">
-          Tempo: {String(Math.floor(time / 60)).padStart(2, "0")}:
-          {String(time % 60).padStart(2, "0")}
-        </div>
-        <div className="crossword-layout">
-         
-          <div className="crossword-board">
-            {grid.map((cell, index) => (
-              <div
-                key={index}
-                className="cell"
-                data-row={cell.row}
-                data-col={cell.col}
-                style={{
-                  gridRow: cell.row,
-                  gridColumn: cell.col,
-                }}
-              >
-                {cell.number && <span className="clue">{cell.number}</span>}
-                <input
-                  type="text"
-                  maxLength="1"
-                  value={cell.value}
-                  onChange={(e) => handleChange(index, e.target.value)}
-                  disabled={!cell.editable}
-                />
-              </div>
-            ))}
+     <>
+      <Header
+  background="#9acef8"
+  textColor="#264653"
+  sobreContent={
+          <div>
+            <h2>Sobre este jogo</h2>
+            <p>
+              Este jogo foi feito por{" "}
+              <strong>Angel Santiago Fernandez Pataquiva</strong>.
+            </p>
           </div>
-    
-          {/* Quadro de perguntas */}
-          <div className="questions">
-            <h3>Perguntas</h3>
-            <div className="questions-columns">
-              <div className="horizontal-questions">
-                <h4>Horizontal</h4>
-                <ul>
-                  <li>1. Sendo que, A=&#123;2,5,7&#125; e B=&#123;1,2,3&#125;, então A∪B é:</li>
-                  <li>3. Se temos a função f(x)=25x+137, qual o valor de f(37)?</li>
-                  <li>
-                      5. Calcule o determinante da seguinte matriz:
-                      <table style={{ borderCollapse: "collapse", marginTop: "5px" }}>
-                        <tbody>
-                          <tr>
-                            <td style={{ border: "1px solid black", padding: "5px" }}>47</td>
-                            <td style={{ border: "1px solid black", padding: "5px" }}>29</td>
-                          </tr>
-                          <tr>
-                            <td style={{ border: "1px solid black", padding: "5px" }}>36</td>
-                            <td style={{ border: "1px solid black", padding: "5px" }}>81</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </li>
-                    <li>7. Sendo o conjunto A=&#123;7,10,18,25,38,44,53,60&#125; e o conjunto B=&#123;18,20,25,38,53,61&#125;, Qual é a interseção A∩B?</li>
-                </ul>
-              </div>
-              <div className="vertical-questions">
-                <h4>Vertical</h4>
-                <ul>
-                  <li>2. Seja a função f(x)=80x²+40x-40, qual o valor de f(85)?</li>
-                  <li>4. Seja A=&#123;1024,2048,409&#125; e B=&#123;2048,8192&#125;, qual é a interseção entre A∩B?</li>
-                  <li>6. Se o cojunto A=&#123;1,2,3,...,1782&#125;(sem multiplos de 100) e B=&#123;5,6,7,...,4211&#125;(sem multiplos de 100) quantos pares ordenados tem o produto cartesiano de A*B?</li>
-                  <li>8. Dada a função f(x)=3x²+472x+8731, se f(15), qual o resultado da função?</li>
-                </ul>
+        }
+/>
+      {showInstructions ? (
+        <div className="instructions-overlay">
+          <div className="instructions-content">
+            <h2>Como jogar</h2>
+            <ul style={{ textAlign: "left", maxWidth: 400, margin: "0 auto" }}>
+              <li>Preencha o crucigrama com os números corretos.</li>
+              <li>Responda às perguntas ao lado para encontrar as respostas.</li>
+              <li>Clique em "Jogar" para começar. O tempo será contado!</li>
+              {/* Agrega tus instrucciones personalizadas aqui */}
+            </ul>
+            <button
+              className="start-game-btn"
+              onClick={() => {
+                setShowInstructions(false);
+                setIsRunning(true);
+              }}
+            >
+              Jogar
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div style={{ marginTop: 80 }} className="crossword-container">
+          {/* Temporizador */}
+          <div className="timer">
+            Tempo: {String(Math.floor(time / 60)).padStart(2, "0")}:
+            {String(time % 60).padStart(2, "0")}
+          </div>
+          <div className="crossword-layout">
+           
+            <div className="crossword-board">
+              {grid.map((cell, index) => (
+                <div
+                  key={index}
+                  className="cell"
+                  data-row={cell.row}
+                  data-col={cell.col}
+                  style={{
+                    gridRow: cell.row,
+                    gridColumn: cell.col,
+                  }}
+                >
+                  {cell.number && <span className="clue">{cell.number}</span>}
+                  <input
+                    type="text"
+                    maxLength="1"
+                    value={cell.value}
+                    onChange={(e) => handleChange(index, e.target.value)}
+                    disabled={!cell.editable}
+                  />
+                </div>
+              ))}
+            </div>
+        
+            {/* Quadro de perguntas */}
+            <div className="questions">
+              <h3>Perguntas</h3>
+              <div className="questions-columns">
+                <div className="horizontal-questions">
+                  <h4>Horizontal</h4>
+                  <ul>
+                    <li>1. Sendo que, A=&#123;2,5,7&#125; e B=&#123;1,2,3&#125;, então A∪B é:</li>
+                    <li>3. Se temos a função f(x)=25x+137, qual o valor de f(37)?</li>
+                    <li>
+                        5. Calcule o determinante da seguinte matriz:
+                        <table style={{ borderCollapse: "collapse", marginTop: "5px" }}>
+                          <tbody>
+                            <tr>
+                              <td style={{ border: "1px solid black", padding: "5px" }}>47</td>
+                              <td style={{ border: "1px solid black", padding: "5px" }}>29</td>
+                            </tr>
+                            <tr>
+                              <td style={{ border: "1px solid black", padding: "5px" }}>36</td>
+                              <td style={{ border: "1px solid black", padding: "5px" }}>81</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </li>
+                      <li>7. Sendo o conjunto A=&#123;7,10,18,25,38,44,53,60&#125; e o conjunto B=&#123;18,20,25,38,53,61&#125;, Qual é a interseção A∩B?</li>
+                  </ul>
+                </div>
+                <div className="vertical-questions">
+                  <h4>Vertical</h4>
+                  <ul>
+                    <li>2. Seja a função f(x)=80x²+40x-40, qual o valor de f(85)?</li>
+                    <li>4. Seja A=&#123;1024,2048,409&#125; e B=&#123;2048,8192&#125;, qual é a interseção entre A∩B?</li>
+                    <li>6. Se o cojunto A=&#123;1,2,3,...,1782&#125;(sem multiplos de 100) e B=&#123;5,6,7,...,4211&#125;(sem multiplos de 100) quantos pares ordenados tem o produto cartesiano de A*B?</li>
+                    <li>8. Dada a função f(x)=3x²+472x+8731, se f(15), qual o resultado da função?</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
+      
+          {/* Botão para validar respostas */}
+          <button className="validar_resposta" onClick={validateAnswers}>
+            Validar Respostas
+          </button>
         </div>
-    
-        {/* Botão para validar respostas */}
-        <button className="validar_resposta" onClick={validateAnswers}>
-          Validar Respostas
-        </button>
-      </div>
-    );
+      )}
+    </>
+  );
 };

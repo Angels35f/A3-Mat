@@ -1,151 +1,102 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import Header from "../src/components/Header"; 
 
-const tileMap = [
-  [0, 1, 1, 2, 2],
-  [1, 1, 0, 2, 2],
-  [1, 0, 0, 2, 2],
-  [2, 2, 2, 2, 2],
-  [2, 2, 2, 2, 2],
-];
+export default function DetectiveLauncher() {
+  const [output, setOutput] = useState("");
+  const [loading, setLoading] = useState(false);
 
-const tileTypes = {
-  0: { image: "dirt.png", solid: false },
-  1: { image: "grass.png", solid: false },
-  2: { image: "lava.png", solid: true },
-};
+  const handleRunLocal = async () => {
+    setLoading(true);
+    setOutput("");
+    try {
+      const res = await fetch("http://localhost:3001/run-python");
+      const text = await res.text();
+      setOutput(text);
+    } catch (err) {
+      setOutput("No se pudo ejecutar el juego. ¿Está el servidor Node.js corriendo?");
+    }
+    setLoading(false);
+  };
 
-const objects = [
-  { x: 64, y: 64, image: "diamond.png" },
-  { x: 128, y: 128, image: "tree.png" },
-];
-
-function Map({ tileMap, tileTypes }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${tileMap[0].length}, 32px)`,
-        gridTemplateRows: `repeat(${tileMap.length}, 32px)`,
-      }}
-    >
-      {tileMap.flat().map((tile, index) => (
-        <div
-          key={index}
-          style={{
-            width: "32px",
-            height: "32px",
-            backgroundImage: `url(/content/images/${tileTypes[tile].image})`,
-            backgroundSize: "cover",
-          }}
-        ></div>
-      ))}
-    </div>
-  );
-}
-
-function Player({ x, y }) {
-  return (
-    <div
-      style={{
-        width: "32px",
-        height: "32px",
-        backgroundImage: "url(/content/images/Personagem2.png)",
-        backgroundSize: "cover",
-        position: "absolute",
-        left: `${x}px`,
-        top: `${y}px`,
-      }}
-    ></div>
-  );
-}
-
-function Object({ x, y, image }) {
-  return (
-    <div
-      style={{
-        width: "32px",
-        height: "32px",
-        backgroundImage: `url(/content/images/${image})`,
-        backgroundSize: "cover",
-        position: "absolute",
-        left: `${x}px`,
-        top: `${y}px`,
-      }}
-    ></div>
-  );
-}
-
-function Game() {
-  const [player, setPlayer] = useState({ x: 50, y: 50 });
-  const [keys, setKeys] = useState({});
-  const [collected, setCollected] = useState([]);
-  const tileSize = 32;
-
-  const handleKeyDown = (e) => setKeys((prev) => ({ ...prev, [e.key]: true }));
-  const handleKeyUp = (e) => setKeys((prev) => ({ ...prev, [e.key]: false }));
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPlayer((prev) => {
-        let newX = prev.x;
-        let newY = prev.y;
-
-        if (keys["ArrowUp"]) newY -= tileSize;
-        if (keys["ArrowDown"]) newY += tileSize;
-        if (keys["ArrowLeft"]) newX -= tileSize;
-        if (keys["ArrowRight"]) newX += tileSize;
-
-       
-        const tileX = Math.floor(newX / tileSize);
-        const tileY = Math.floor(newY / tileSize);
-        if (tileMap[tileY]?.[tileX] === 2) {
-          return prev; 
+    <>
+      <Header
+        background="rgba(20, 10, 30, 0.5)"
+        textColor="#fff"
+        sobreContent={
+          <div>
+            <h2>Sobre este jogo</h2>
+            <p>
+              Este jogo foi feito por <strong>Henrique Assao Taminato</strong>.
+            </p>
+          </div>
         }
-
-       
-        objects.forEach((obj, index) => {
-          if (newX === obj.x && newY === obj.y && !collected.includes(index)) {
-            setCollected((prev) => [...prev, index]);
-          }
-        });
-
-        return { x: newX, y: newY };
-      });
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [keys, collected]);
-
-  return (
-    <div
-      style={{
-        width: "800px",
-        height: "600px",
-        position: "relative",
-        overflow: "hidden",
-        backgroundColor: "#87CEEB",
-      }}
-    >
-            <h1>Jogo sendo testado ainda.</h1>
-      <Map tileMap={tileMap} tileTypes={tileTypes} />
-      <Player x={player.x} y={player.y} />
-      {objects.map(
-        (obj, index) =>
-          !collected.includes(index) && (
-            <Object key={index} x={obj.x} y={obj.y} image={obj.image} />
-          )
-      )}
-    </div>
+      />
+      <div
+        style={{
+          minHeight: "100vh",
+          backgroundImage: `url("/assets/Plano_Fundo.png"), linear-gradient(to bottom, #7b1e3a 0%, #1a237e 100%)`,
+          backgroundPosition: "center top, center top",
+          backgroundSize: "contain, cover", 
+          backgroundRepeat: "no-repeat, no-repeat",
+          paddingTop: 120, 
+        }}
+      >
+        <div style={{
+          maxWidth: 500,
+          margin: "0 auto",
+          padding: 32,
+          background: "rgba(0,0,0,0.7)",
+          borderRadius: 16,
+          boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+          textAlign: "center",
+          color: "#fff"
+        }}>
+          <h2>Own Case - Jogo de detetives (Python)</h2>
+          <button
+            onClick={handleRunLocal}
+            style={{
+              background: "#264653",
+              color: "#fff",
+              padding: "12px 24px",
+              borderRadius: 8,
+              border: "none",
+              fontWeight: "bold",
+              fontSize: 16,
+              cursor: "pointer"
+            }}
+            disabled={loading}
+          >
+            {loading ? "Ejecutando..." : "Ejecutar el juego localmente"}
+          </button>
+          <div style={{
+            background: "#f1faee",
+            borderRadius: 8,
+            padding: 16,
+            fontSize: 15,
+            color: "#222",
+            textAlign: "left",
+            marginTop: 24
+          }}>
+            <strong>¿Cómo funciona?</strong>
+            <ol>
+              <li>Deve estar instalado Python 3 na máquina.</li>
+              <li>O servidor Node.js deve estar ativo (<code>node run-python-server.cjs</code>).</li>
+              <li>Click no botão para executar o jogo de modo local<code>main.py</code> na sua máquina. Por enquanto o jogo só pode ser jogado de forma local.</li>
+            </ol>
+            {output && (
+              <pre style={{
+                background: "#e0e0e0",
+                padding: 8,
+                borderRadius: 4,
+                marginTop: 12,
+                maxHeight: 200,
+                overflow: "auto"
+              }}>{output}</pre>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
-
-export default Game;

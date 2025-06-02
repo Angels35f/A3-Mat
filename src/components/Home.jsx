@@ -1,9 +1,44 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+// Componente principal da página inicial
 function Home() {
-  const [typedText, setTypedText] = useState(""); 
+  // Frases que o mascote pode falar
+  const frasesMascote = [
+    "Já pensou em ser detetive?",
+    "A matemática pode ser divertida!",
+    "Clique em um jogo para começar!",
+    "Você consegue!",
+    "Imagina ir numa masmorra e lutar com monstros usando matemática?",
+    "Não desista, tente outra vez!",
+    "Que tal um desafio de lógica?",
+    "Matemática é lógica e diversão!",
+    "Já tomou água hoje?",
+    "Vamos aprender brincando!",
+    "Que tal da próxima vez um barco pirata?",
+    "A matemática é como um jogo de estratégia!",
+    "Você sabia que a matemática está em tudo ao nosso redor?",
+    "A matemática é a linguagem do universo!",
+  ];
 
+  // Função para embaralhar um array (Fisher-Yates)
+  function shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // Estado para o texto animado do título
+  const [typedText, setTypedText] = useState(""); 
+  // Estado para a mensagem do mascote
+  const [mascoteMsg, setMascoteMsg] = useState("");
+  // Estado para controlar as frases restantes do mascote (sem repetição)
+  const [frasesRestantes, setFrasesRestantes] = useState(shuffle(frasesMascote));
+
+  // Efeito para animar o texto do título principal
   useEffect(() => {
     const texto = "Maatemática divertida para todos!";
     let i = 0;
@@ -19,9 +54,24 @@ function Home() {
 
     return () => clearInterval(interval); 
   }, []); 
+
+  // Função chamada ao clicar no mascote: mostra frase aleatória sem repetir
+  const handleMascoteClick = () => {
+    if (frasesRestantes.length === 0) {
+      // Se acabarem as frases, embaralha novamente e avisa o usuário
+      setFrasesRestantes(shuffle(frasesMascote));
+      setMascoteMsg("Acabaram as frases! Clique de novo para recomeçar.");
+      return;
+    }
+    // Mostra a próxima frase e atualiza o array de frases restantes
+    const [frase, ...resto] = frasesRestantes;
+    setMascoteMsg(frase);
+    setFrasesRestantes(resto);
+  };
+
   return (
     <>
-      {/* NAVBAR */}
+      {/* Barra de navegação principal */}
       <nav className="navbar">
         <div className="nav-container container">
           <div className="logo">🧠 Desafio MatematiKa</div>
@@ -35,10 +85,28 @@ function Home() {
         </div>
       </nav>
 
-      {/* MASCOTE */}
-      <div className="mascote">🤖</div>
+      {/* Mascote interativo: mostra frases ao clicar */}
+      <div className="mascote" onClick={handleMascoteClick} style={{ cursor: "pointer", userSelect: "none" }}>
+        🤖
+        {mascoteMsg && (
+          <div style={{
+            marginTop: 8,
+            background: "#fff",
+            color: "#222",
+            borderRadius: 8,
+            padding: "8px 16px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            display: "inline-block",
+            fontSize: 16,
+            position: "relative",
+            left: 10
+          }}>
+            {mascoteMsg}
+          </div>
+        )}
+      </div>
 
-      {/* HERO */}
+      {/* Seção principal com título animado e botão para jogos */}
       <header id="home" className="hero">
         <div className="container hero-content">
           <h1>
@@ -50,36 +118,40 @@ function Home() {
         </div>
       </header>
 
-      {/* SOBRE */}
+      {/* Seção "Sobre" com explicação do projeto */}
       <section id="sobre" className="section">
         <div className="container">
           <h2>📘 Sobre o Projeto</h2>
-          <p>O Desafio Matematika é um trabalho acadêmico que transforma conteúdos de matemática em desafios interativos para crianças e adolescentes. Usamos lógica, criatividade e diversão para estimular o aprendizado!</p>
+          <p>O Desafio Matematika é um trabalho acadêmico que transforma conteúdos de matemática em desafios interativos para adolescentes e adultos. Usamos lógica, criatividade e diversão para estimular o aprendizado!</p>
         </div>
       </section>
 
-      {/* JOGOS */}
+      {/* Seção de jogos: cards para cada jogo */}
       <section id="jogos" className="section alt">
         <div className="container">
           <h2>🧩 Nossos Jogos</h2>
           <div className="cards">
-            <Link to="/game" className="card">
-              <h3>🔢 Jogo 1</h3>
-              <p>Descrição do Jogo 1</p>
+            <Link to="/detective" className="card">
+              <h3>🕵️‍♂️ Own case</h3>
+              <p>Resolva o mistério neste jogo investigativo em Python!</p>
             </Link>
             <Link to="/palavras-c" className="card">
-              <h3>📏 Jogo 2</h3>
-              <p>Descrição do Jogo 2</p>
+              <h3>🧮 Números Cruzados</h3>
+              <p>Desafie-se com o nosso jogo de números cruzados matemáticas!</p>
             </Link>
             <Link to="/batalha-naval" className="card">
-              <h3>🎲 Jogo 3</h3>
-              <p>Descrição do Jogo 3</p>
+              <h3>🚢 Batalha Naval</h3>
+              <p>Encontre os navios no plano cartesiano!</p>
+            </Link>
+            <Link to="/dungeon" className="card">
+              <h3>🗡️ RPG EXE</h3>
+              <p>Entre em masmorras e lute contra inimigos, usando seus conhecimentos matemáticos para vencer!</p>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* CONTATO */}
+      {/* Seção de contato */}
       <section id="contato" className="section">
         <div className="container">
           <h2>📬 Fale Conosco</h2>
@@ -87,7 +159,7 @@ function Home() {
         </div>
       </section>
 
-      {/* RODAPÉ */}
+      {/* Rodapé com informações do projeto */}
       <footer className="footer">
         <p>© 2025 Desafio MatematiKa | Trabalho A3 2025/1</p>
       </footer>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RPG Matemático</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="game-container">
+
+  <!-- TELA DE TÍTULO -->
+  <div id="title-screen">
+    <pre id="ascii-title" style="font-size: 14px;">
+██████╗ ██████╗  ██████╗     ███████╗██╗  ██╗███████╗
+██╔══██╗██╔══██╗██╔════╝     ██╔════╝╚██╗██╔╝██╔════╝
+██████╔╝██████╔╝██║  ███╗    █████╗   ╚███╔╝ █████╗  
+██╔══██╗██╔═══╝ ██║   ██║    ██╔══╝   ██╔██╗ ██╔══╝  
+██║  ██║██║     ╚██████╔╝    ███████╗██╔╝ ██╗███████╗
+╚═╝  ╚═╝╚═╝      ╚═════╝     ╚══════╝╚═╝  ╚═╝╚══════╝ 
+    </pre>
+    <div style="margin-top: 20px;">
+      <button onclick="iniciarHistoria()">Jogar</button>
+      <button onclick="modoSemFim()">♾️ Jogar Sem Fim</button>
+      <button onclick="abrirGerenciadorSaves()">🧠 Gerenciar Saves</button>
+
+    </div>
+  </div>
+
+  <!-- HISTÓRIA -->
+  <div id="story" class="hidden">
+    <h2>📖 Prólogo</h2>
+    <p>O caos tomou conta do mundo desde que a matemática foi selada por um antigo ser conhecido como <strong>Lorde das Matrizes</strong>.</p>
+    <p>Você acorda em uma masmorra escura... e mal tem tempo para respirar.</p>
+    <p>⚠️ Um monstro surge! Não há tempo para descanso, lute!</p>
+    <button onclick="comecarMasmorra()">Entrar na Masmorra</button>
+  </div>
+
+  <div id="escolha-regiao" class="hidden">
+    <h2>🌍 Escolha uma região para explorar:</h2>
+    <button onclick="escolherRegiao(0)">🌲 Floresta Sombria</button>
+    <button onclick="escolherRegiao(1)">💀 Catacumbas</button>
+    <button onclick="escolherRegiao(2)">⛰ Caverna Rochosa</button>
+    <button onclick="escolherRegiao(3)">🌀 Torre do Cálculo</button>
+  </div>
+
+  <!-- JOGO PRINCIPAL -->
+  <div class="game-container hidden" id="game">
+    <button id="botao-salvar-sair" onclick="salvarESair()">💾 Salvar e Sair</button>
+    <img id="monster-image" class="monster-image hidden" src="" alt="Arte do Monstro">
+
+    <div id="status">
+        <p>🧙‍♂️ Herói</p>
+        <div class="health-container">
+          <div id="player-health-bar" class="health-bar"></div>
+        </div>
+        
+        <p>👹 Monstro (<span id="monster-name">???</span>)</p>
+        <div class="health-container">
+          <div id="monster-health-bar" class="health-bar monster"></div>
+        </div>
+      
+        <p>Nível: <span id="level">1</span> 🎯</p>
+        <p>XP: <span id="xp">0</span>/<span id="xpParaProximoNivel">5</span></p>
+        <p>Região: <span id="regiao-atual">---</span></p>
+    </div>
+
+    <div id="attack-options" class="hidden">
+      <p>Escolha seu ataque:</p>
+      <button onclick="chooseAttack('determinant')">⚔️ Determinante</button>
+      <button onclick="chooseAttack('cartesian')">🎯 Produto Cartesiano</button>
+      <button onclick="chooseAttack('function')">💥 Função 1º Grau</button>
+      <button onclick="chooseAttack('system')">🧠 Sistema Linear</button>
+      <button onclick="ataqueDebug()" id="debug-button" class="hidden">🛠️ Ataque Debug (99 dano)</button>
+    </div>
+
+    <div id="challenge" class="hidden">
+      <p id="challenge-text">Desafio:</p>
+      <pre id="problem"></pre>
+      <input type="text" id="answer" placeholder="Digite sua resposta">
+      <div class="buttons">
+        <button onclick="submitAnswer()">Atacar!</button>
+        <button id="magic-button" onclick="useMagic()">Usar Magia (Cura)</button>
+
+        <button onclick="evadeChallenge()">Não sei / Esquivar</button>
+      </div>
+    </div>
+
+    <div id="defense" class="hidden">
+      <p>⚡ Defesa! Resolva rápido:</p>
+      <pre id="defense-problem"></pre>
+      <input type="text" id="defense-answer" placeholder="Digite sua resposta">
+      <button onclick="submitDefense()">Defender!</button>
+    </div>
+
+    <!-- LOJA DE UPGRADES -->
+    <div id="loja" class="hidden">
+      <h3>🛒 Escolha um Upgrade:</h3>
+      <button onclick="aplicarUpgrade('vida')">❤️ Aumentar Vida Máxima</button>
+      <button onclick="aplicarUpgrade('cura')">💊 Comprar +1 Cura</button>
+      <p style="margin-top:10px">Após comprar, você voltará à batalha automaticamente.</p>
+    </div>
+
+    <div id="result"></div>
+  </div>
+</div>
+
+<div id="buff-escolha" class="hidden">
+  <h2>🎁 Escolha um Bônus Passivo</h2>
+  <div id="buff-opcoes"></div>
+</div>
+
+
+<div id="game-over-screen" class="hidden">
+  <h2>☠️ Game Over</h2>
+  <p>Você foi derrotado...</p>
+  <button onclick="voltarParaSelecao()">🔁 Tentar Novamente</button>
+</div>
+
+<div id="tela-vitoria" class="hidden">
+  <h2>🎉 Parabéns!</h2>
+  <p>Você conquistou todas as regiões!</p>
+  <button onclick="voltarParaMenu()">🏠 Menu Principal</button>
+  <button onclick="modoSemFim()">♾️ Jogar Sem Fim</button>
+</div>
+
+<div id="confirmacao-salvo" class="hidden">✅ Progresso salvo!</div>
+
+<div id="gerenciador-saves" class="hidden">
+  <h2>💾 Gerenciar Progresso</h2>
+  <div class="slots-container">
+    <div class="slot" id="slot1">
+      <p>Slot 1</p>
+      <p id="info-slot1">⏳ Sem dados</p>
+      <button onclick="salvarJogo(1)">💾 Salvar</button>
+      <button onclick="carregarJogo(1)">📂 Carregar</button>
+      <button onclick="exportarProgresso(1)">⬇️ Exportar</button>
+      <input type="file" onchange="importarProgresso(1, this.files[0])">
+      
+      <button onclick="apagarSlot(1)">🗑️ Apagar</button>
+
+    </div>
+    <div class="slot" id="slot2">
+      <p>Slot 2</p>
+      <p id="info-slot2">⏳ Sem dados</p>
+      <button onclick="salvarJogo(2)">💾 Salvar</button>
+      <button onclick="carregarJogo(2)">📂 Carregar</button>
+      <button onclick="exportarProgresso(2)">⬇️ Exportar</button>
+      <input type="file" onchange="importarProgresso(2, this.files[0])">
+      
+      <button onclick="apagarSlot(2)">🗑️ Apagar</button>
+
+    </div>
+    <div class="slot" id="slot3">
+      <p>Slot 3</p>
+      <p id="info-slot3">⏳ Sem dados</p>
+      <button onclick="salvarJogo(3)">💾 Salvar</button>
+      <button onclick="carregarJogo(3)">📂 Carregar</button>
+      <button onclick="exportarProgresso(3)">⬇️ Exportar</button>
+      <input type="file" onchange="importarProgresso(3, this.files[0])">
+      
+      <button onclick="apagarSlot(3)">🗑️ Apagar</button>
+
+    </div>
+  </div>
+  <button onclick="fecharGerenciadorSaves()">✖️ Fechar</button>
+</div>
+
+
+<script>
+function iniciarHistoria() {
+  document.getElementById("title-screen").classList.add("hidden");
+  document.getElementById("story").classList.remove("hidden");
+}
+
+function comecarMasmorra() {
+  document.getElementById("story").classList.add("hidden");
+  document.getElementById("escolha-regiao").classList.remove("hidden");
+
+  atualizarBotoesRegioes();
+
+  if (modoDebug) {
+    setTimeout(() => {
+      const debugBtn = document.getElementById("debug-button");
+      if (debugBtn) debugBtn.classList.remove("hidden");
+    }, 100);
+  }
+}
+
+</script>
+
+
+
+<script src="scripts/utils.js"></script>
+<script src="scripts/monsters.js"></script>
+<script>
+  loadMonsters(); 
+</script>
+<script src="scripts/game.js"></script>
+<script src="scripts/battle.js"></script>
+<script src="scripts/ui.js"></script>
+<script src="scripts/endless.js"></script>
+<script src="scripts/save.js"></script>
+
+
+
+</body>
+</html>
