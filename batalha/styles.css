@@ -1,0 +1,108 @@
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1, h2 {
+    color: #333;
+    text-align: center;
+}
+
+.game-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.board {
+    background-color: #fff;
+    border: 3px solid #333;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.board-title {
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(11, 24px);
+    grid-template-rows: repeat(11, 24px);
+    gap: 1px;
+}
+
+.cell {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+}
+
+.cell.coordinate {
+    background-color: transparent;
+    font-weight: bold;
+}
+
+.cell.ship {
+    background-color: #777;
+    color: white;
+}
+
+.cell.hit {
+    background-color: #f00;
+    color: white;
+}
+
+.cell.miss {
+    background-color: #0af;
+    color: white;
+}
+
+.controls {
+    margin-top: 20px;
+    text-align: center;
+}
+
+button {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+.instructions {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #333;
+    line-height: 1.5;
+}
+
+.math-concept {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #eef;
+    border-left: 4px solid #33f;
+}

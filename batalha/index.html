@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha Naval Matemático</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>★ Batalha Naval Matemático ★</h1>
+    
+    <div class="instructions">
+        <h2>Como Jogar:</h2>
+        <p>1. O computador posicionou navios aleatoriamente no plano cartesiano.</p>
+        <p>2. Digite coordenadas (x,y) para atacar. Exemplo: (3,5)</p>
+        <p>3. Acerte todos os navios para vencer!</p>
+    </div>
+    
+    <div class="game-container">
+        <div class="board">
+            <div class="board-title">Seus Ataques</div>
+            <div class="grid" id="attack-grid"></div>
+        </div>
+        
+        <div class="board">
+            <div class="board-title">Seus Navios (escondido do inimigo)</div>
+            <div class="grid" id="ship-grid"></div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <input type="text" id="coordinate-input" placeholder="Digite (x,y)" size="15">
+        <button id="attack-btn">Atacar!</button>
+        <button id="restart-btn">Reiniciar</button>
+    </div>
+    
+    <div class="math-concept">
+        <h2>Conceitos Matemáticos:</h2>
+        <p><strong>Plano Cartesiano:</strong> Sistema de coordenadas que especifica cada ponto em um plano por um par de números (x,y).</p>
+        <p><strong>Conjuntos:</strong> Coleção de elementos. No jogo, os navios são conjuntos de coordenadas e os ataques são operações sobre esses conjuntos.</p>
+        <p><strong>Interseção:</strong> Quando um ataque acerta um navio, significa que a coordenada do ataque pertence ao conjunto de coordenadas do navio.</p>
+    </div>
+    
+    <div id="game-status" style="text-align: center; margin: 20px; font-weight: bold;"></div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
