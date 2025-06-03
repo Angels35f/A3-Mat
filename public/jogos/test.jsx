@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Header from "../src/components/Header"; 
+import Header from "../../src/components/Header"; 
 
 export default function DetectiveLauncher() {
   const [output, setOutput] = useState("");
@@ -35,7 +35,7 @@ export default function DetectiveLauncher() {
       <div
         style={{
           minHeight: "100vh",
-          backgroundImage: `url("/assets/Plano_Fundo.png"), linear-gradient(to bottom, #7b1e3a 0%, #1a237e 100%)`,
+          backgroundImage: `url("./assets/Plano_Fundo.png"), linear-gradient(to bottom, #7b1e3a 0%, #1a237e 100%)`,
           backgroundPosition: "center top, center top",
           backgroundSize: "contain, cover", 
           backgroundRepeat: "no-repeat, no-repeat",

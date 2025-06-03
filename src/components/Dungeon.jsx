@@ -18,7 +18,7 @@ export default function Dungeon() {
       />
       <div style={{ marginTop: 100 }}>
         <iframe
-          src="/jogos/jogo/index.html"
+          src={`${import.meta.env.BASE_URL}jogos/jogo/index.html`}
           title="Dungeon Game"
           style={{
             width: "100%",

@@ -77,10 +77,30 @@ function Home() {
           <div className="logo">🧠 Desafio MatematiKa</div>
           <button id="hamburger" className="hamburger">&#9776;</button>
           <ul id="nav-links" className="nav-links">
-            <li><a href="#home">Início</a></li>
-            <li><a href="#sobre">Sobre</a></li>
-            <li><a href="#jogos">Jogos</a></li>
-            <li><a href="#contato">Contato</a></li>
+            <li>
+              <a href="#" onClick={e => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}>Início</a>
+            </li>
+            <li>
+              <a href="#sobre" onClick={e => {
+                e.preventDefault();
+                document.getElementById("sobre")?.scrollIntoView({ behavior: "smooth" });
+              }}>Sobre</a>
+            </li>
+            <li>
+              <a href="#" onClick={e => {
+                e.preventDefault();
+                window.dispatchEvent(new CustomEvent("abrirJogos"));
+              }}>Jogos</a>
+            </li>
+            <li>
+              <a href="#contato" onClick={e => {
+                e.preventDefault();
+                document.getElementById("contato")?.scrollIntoView({ behavior: "smooth" });
+              }}>Contato</a>
+            </li>
           </ul>
         </div>
       </nav>
@@ -114,7 +134,46 @@ function Home() {
             <span className="cursor">|</span>
           </h1>
           <p>Explore jogos educativos para se divertir enquanto aprende matemática!</p>
-          <a href="#jogos" className="btn-primary">🎮 Começar a Jogar</a>
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 24 }}>
+            <Link
+              to="#"
+              className="btn-primary"
+              style={{
+                minWidth: 220,
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "none", // fuerza sin borde
+                background: "var(--btn-bg, #00bfae)", // o tu color
+                color: "#fff",
+                textDecoration: "none"
+              }}
+              onClick={e => {
+                e.preventDefault();
+                window.dispatchEvent(new CustomEvent("abrirJogos"));
+              }}
+            >
+              🎮 Começar a Jogar
+            </Link>
+            <Link
+              to="/graficos"
+              className="btn-primary"
+              style={{
+                minWidth: 220,
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "none",
+                background: "var(--btn-bg, #00bfae)",
+                color: "#fff",
+                textDecoration: "none"
+              }}
+            >
+              📈 Gráficos Interativos
+            </Link>
+          </div>
         </div>
       </header>
 

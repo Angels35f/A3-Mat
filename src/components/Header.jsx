@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 
-// Componente de cabeçalho com navegação e modal de jogos/créditos
 export default function Header({
   sobreContent,
   jogosContent,
@@ -12,10 +11,29 @@ export default function Header({
 }) {
   const [modal, setModal] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Fecha o modal ao clicar fora do conteúdo
   const handleOverlayClick = (e) => {
     if (e.target.classList.contains("modal-overlay")) setModal(null);
+  };
+
+  // Permite abrir o modal de jogos via evento global
+  useEffect(() => {
+    const handler = () => setModal("jogos");
+    window.addEventListener("abrirJogos", handler);
+    return () => window.removeEventListener("abrirJogos", handler);
+  }, []);
+
+  // Fecha o modal ao trocar de rota
+  useEffect(() => {
+    setModal(null);
+  }, [location]);
+
+  // Scroll suave para seções
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -41,6 +59,7 @@ export default function Header({
           <button id="hamburger" className="hamburger">&#9776;</button>
           <ul id="nav-links" className="nav-links">
             <li>
+              {/* Início: navega a la página principal */}
               <Link to="/">Início</Link>
             </li>
             <li>
@@ -50,7 +69,11 @@ export default function Header({
               <button className="nav-btn" onClick={() => setModal("jogos")}>Jogos</button>
             </li>
             <li>
-              <button className="nav-btn" onClick={() => setModal("contato")}>Créditos</button>
+              <Link to="/graficos">Gráficos</Link>
+            </li>
+            <li>
+              {/* Contato: abre el modal de créditos/contacto */}
+              <button className="nav-btn" onClick={() => setModal("contato")}>Contato</button>
             </li>
           </ul>
         </div>

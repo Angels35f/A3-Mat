@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import Header from "../src/components/Header.jsx";
-import "../src/styles/PalavrasC.css";
+import Header from "../../src/components/Header.jsx";
+import "../../src/styles/PalavrasC.css";
 
 export default function Crossword() {
   const cells = [

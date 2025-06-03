@@ -18,7 +18,7 @@ export default function BatalhaNavalPage() {
       />
       <div style={{ marginTop: 100 }}>
         <iframe
-          src="/batalha/index.html"
+          src="./batalha/index.html"
           title="Batalha Naval"
           style={{
             width: "100%",
