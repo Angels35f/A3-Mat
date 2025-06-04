@@ -1,4 +1,4 @@
-let modoDebug = true;
+let modoDebug = false;
 
 
 let regioesConcluidas = [];

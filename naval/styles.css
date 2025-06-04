@@ -26,7 +26,10 @@ h1, h2 {
     border: 3px solid #333;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    min-width: max-content;
+    overflow-x: auto;
 }
+
 
 .board-title {
     text-align: center;
@@ -106,3 +109,107 @@ button:hover {
     background-color: #eef;
     border-left: 4px solid #33f;
 }
+
+.scoreboard {
+    background-color: #fff;
+    border: 1px solid #333;
+    padding: 15px;
+    margin-top: 20px;
+    text-align: center;
+    width: 300px;
+}
+
+.scoreboard p {
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .game-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .board {
+        width: auto;
+    }
+
+    .grid {
+        grid-template-columns: repeat(11, 8vw);
+        grid-template-rows: repeat(11, 8vw);
+    }
+
+    .cell {
+        font-size: 3vw;
+    }
+
+    input#coordinate-input {
+        width: 90%;
+        max-width: 300px;
+    }
+
+    button {
+        width: 40%;
+        margin: 5px 0;
+    }
+}
+
+.controls select {
+    font-family: 'Courier New', monospace;
+    padding: 8px;
+    margin-left: 8px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(20px, 1fr));
+    grid-template-rows: repeat(11, 24px);
+    gap: 1px;
+    background-color: #ddd;
+    border: 1px solid #999;
+    position: relative;
+    overflow: hidden;
+}
+
+
+.cell {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #fefefe;
+    box-shadow: inset 0 0 0 1px #e0e0e0;
+}
+
+.cell.coordinate {
+    background-color: #cce5ff;
+    font-weight: bold;
+    color: #003366;
+    box-shadow: none;
+}
+
+.cell.ship {
+    background-color: #666;
+    color: white;
+}
+
+.cell.hit {
+    background-color: #d9534f;
+    color: white;
+}
+
+.cell.miss {
+    background-color: #5bc0de;
+    color: white;
+}
+
+.board-title {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #003366;
+}
+

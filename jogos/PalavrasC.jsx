@@ -180,7 +180,6 @@ export default function Crossword() {
               <li>Preencha o crucigrama com os números corretos.</li>
               <li>Responda às perguntas ao lado para encontrar as respostas.</li>
               <li>Clique em "Jogar" para começar. O tempo será contado!</li>
-              {/* Agrega tus instrucciones personalizadas aqui */}
             </ul>
             <button
               className="start-game-btn"

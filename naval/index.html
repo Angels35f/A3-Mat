@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>★ Batalha Naval Matemático ★</h1>
+    <h1>★ Batalha Naval Matemático ★ <span id="difficulty-label" style="font-size: 18px; color: #666;"></span></h1>
+
     
     <div class="instructions">
         <h2>Como Jogar:</h2>
@@ -21,19 +22,37 @@
             <div class="board-title">Seus Ataques</div>
             <div class="grid" id="attack-grid"></div>
         </div>
+
+
         
         <div class="board">
             <div class="board-title">Seus Navios (escondido do inimigo)</div>
             <div class="grid" id="ship-grid"></div>
         </div>
     </div>
+
+    <div class="controls">
+    <label for="difficulty-select"><strong>Dificuldade:</strong></label>
+    <select id="difficulty-select">
+        <option value="easy">Fácil</option>
+        <option value="medium">Médio</option>
+        <option value="hard">Difícil</option>
+    </select>
+</div>
+
     
     <div class="controls">
         <input type="text" id="coordinate-input" placeholder="Digite (x,y)" size="15">
         <button id="attack-btn">Atacar!</button>
         <button id="restart-btn">Reiniciar</button>
     </div>
-    
+    <div class="scoreboard">
+        <h2>Status do Jogo</h2>
+        <p id="hits">Acertos: 0</p>
+        <p id="misses">Erros: 0</p>
+        <p id="sunk-ships">Navios afundados: Nenhum</p>
+    </div>
+
     <div class="math-concept">
         <h2>Conceitos Matemáticos:</h2>
         <p><strong>Plano Cartesiano:</strong> Sistema de coordenadas que especifica cada ponto em um plano por um par de números (x,y).</p>
@@ -42,6 +61,15 @@
     </div>
     
     <div id="game-status" style="text-align: center; margin: 20px; font-weight: bold;"></div>
+
+    <div id="attack-history" style="max-width: 600px; margin: 20px auto; font-family: 'Courier New', monospace;">
+    <h3>Histórico de Jogadas (Conjuntos)</h3>
+    <p><strong>A (Ataques):</strong> <span id="history-all"></span></p>
+    <p><strong>B (Navios):</strong> <span id="history-ships">Oculto</span></p>
+    <p><strong>A ∩ B (Acertos):</strong> <span id="history-hits"></span></p>
+    <p><strong>A \\ B (Erros):</strong> <span id="history-misses"></span></p>
+</div>
+
     
     <script src="script.js"></script>
 </body>
