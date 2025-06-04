@@ -1,0 +1,15 @@
+Como abrir o site se é usado vscode.
+1. instala node.js https://nodejs.org/ e baixar a versão LTS e instalar.
+2. Abrir o projeto na pasta do projeto.
+3. Na terminal, escrever "npm install".
+4. Após a instalação, em outra terminal escrever "npm run dev", caso não funcione, reiniciar o vscode.
+5. Se funcionar, o site vai abrir com o endereço "http://localhost:5173/" se não abre automaticamente, escrever no navegador.
+
+Para abrir o jogo de "detetive".
+1. Ter instalado python 3 no pc, ou a extensão de python no proprio vscode.
+2. na terminal escrever "pip install pygame", para instalar a biblioteca do jogo
+3. na terminal, tem que estar na pasta "../a3\public\jogos\detective>" para conseguir abrir o jogo.
+4. Estando nessa pasta, na terminal, pode executar o main.py que está no "../a3\public\jogos\detective\src>" 
+
+caso nada disso funcionar. Aqui o link no qual dá para ver o site, porém, sem o primeiro jogo "own case"
+https://angels35f.github.io/A3-Mat/#/

@@ -59,7 +59,6 @@ export default function Header({
           <button id="hamburger" className="hamburger">&#9776;</button>
           <ul id="nav-links" className="nav-links">
             <li>
-              {/* Início: navega a la página principal */}
               <Link to="/">Início</Link>
             </li>
             <li>
@@ -72,7 +71,6 @@ export default function Header({
               <Link to="/graficos">Gráficos</Link>
             </li>
             <li>
-              {/* Contato: abre el modal de créditos/contacto */}
               <button className="nav-btn" onClick={() => setModal("contato")}>Contato</button>
             </li>
           </ul>

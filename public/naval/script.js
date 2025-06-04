@@ -1,5 +1,3 @@
-// Battleship Game - JavaScript Version
-// Versão simples do jogo Batalha Naval (Battleship) em JavaScript
 const BOARD_SIZE = 10;
 const SHIPS = [
     { name: "Porta-Aviões", size: 5 },
@@ -9,71 +7,88 @@ const SHIPS = [
     { name: "Barco de Patrulha", size: 2 }
 ];
 
-// Estado do jogo
 let gameState = {
     playerShips: [],
     computerShips: [],
     playerAttacks: new Set(),
     computerAttacks: new Set(),
-    gameOver: false
+    gameOver: false,
+    hits: 0,
+    misses: 0,
+    sunkShips: [],
+    huntTargets: [],
+    lastMisses: []
 };
 
-// DOM
+let difficulty = 'easy';
+
 const attackGrid = document.getElementById('attack-grid');
 const shipGrid = document.getElementById('ship-grid');
 const coordinateInput = document.getElementById('coordinate-input');
 const attackBtn = document.getElementById('attack-btn');
 const restartBtn = document.getElementById('restart-btn');
 const gameStatus = document.getElementById('game-status');
+const difficultySelect = document.getElementById('difficulty-select');
+const difficultyLabel = document.getElementById('difficulty-label');
+const historyAll = document.getElementById('history-all');
+const historyHits = document.getElementById('history-hits');
+const historyMisses = document.getElementById('history-misses');
 
-// Inicialização do jogo
+
+difficultySelect.addEventListener('change', () => {
+    difficulty = difficultySelect.value;
+    updateDifficultyLabel();
+});
+
+function updateDifficultyLabel() {
+    const labels = {
+        easy: 'Fácil 🎲',
+        medium: 'Médio 🧠',
+        hard: 'Difícil 🔥'
+    };
+    if (difficultyLabel) {
+        difficultyLabel.textContent = ` — Dificuldade: ${labels[difficulty]}`;
+    }
+}
+
 function initGame() {
-    // Limpar estado
     gameState = {
         playerShips: [],
         computerShips: [],
         playerAttacks: new Set(),
         computerAttacks: new Set(),
-        gameOver: false
+        gameOver: false,
+        hits: 0,
+        misses: 0,
+        sunkShips: [],
+        huntTargets: [],
+        lastMisses: []
     };
-    
     createGrids();
-    
-    // Posiciona navios
     placeShips(gameState.playerShips, true);
     placeShips(gameState.computerShips, false);
-    
-    // Atualizar display
     updateGrids();
+    updateDifficultyLabel();
     gameStatus.textContent = "Jogo iniciado. Digite coordenadas para atacar!";
 }
 
-// Cria os grids visuais
 function createGrids() {
     attackGrid.innerHTML = '';
     shipGrid.innerHTML = '';
-    
-    // Cria células para ambos os grids
     for (let y = 0; y <= BOARD_SIZE; y++) {
         for (let x = 0; x <= BOARD_SIZE; x++) {
-            // Células de coordenadas
             if (x === 0 && y === 0) {
                 addCell(attackGrid, ' ', 'coordinate');
                 addCell(shipGrid, ' ', 'coordinate');
-            } 
-            else if (x === 0) {
+            } else if (x === 0) {
                 addCell(attackGrid, y, 'coordinate');
                 addCell(shipGrid, y, 'coordinate');
-            } 
-            else if (y === 0) {
+            } else if (y === 0) {
                 addCell(attackGrid, String.fromCharCode(64 + x), 'coordinate');
                 addCell(shipGrid, String.fromCharCode(64 + x), 'coordinate');
-            } 
-            else {
+            } else {
                 const attackCell = addCell(attackGrid, '·', 'water');
                 const shipCell = addCell(shipGrid, '·', 'water');
-                
-                // Adicionar event listeners para debug (mostrar navios do computador)
                 attackCell.dataset.x = x;
                 attackCell.dataset.y = y;
                 shipCell.dataset.x = x;
@@ -83,7 +98,6 @@ function createGrids() {
     }
 }
 
-// Adicionar uma célula ao grid
 function addCell(grid, content, className = '') {
     const cell = document.createElement('div');
     cell.className = `cell ${className}`;
@@ -92,115 +106,83 @@ function addCell(grid, content, className = '') {
     return cell;
 }
 
-// Posiciona navios aleatoriamente
 function placeShips(shipsArray, isPlayer) {
     for (const ship of SHIPS) {
         let placed = false;
-        
         while (!placed) {
             const horizontal = Math.random() < 0.5;
-            const x = horizontal 
+            const x = horizontal
                 ? Math.floor(Math.random() * (BOARD_SIZE - ship.size + 1)) + 1
                 : Math.floor(Math.random() * BOARD_SIZE) + 1;
-            const y = horizontal 
+            const y = horizontal
                 ? Math.floor(Math.random() * BOARD_SIZE) + 1
                 : Math.floor(Math.random() * (BOARD_SIZE - ship.size + 1)) + 1;
-            
-            // Verificar se a posição é válida
             const positions = [];
             let valid = true;
-            
             for (let i = 0; i < ship.size; i++) {
                 const posX = horizontal ? x + i : x;
                 const posY = horizontal ? y : y + i;
                 positions.push({ x: posX, y: posY });
-                
-                // Verificar colisão com outros navios
                 for (const otherShip of shipsArray) {
                     if (otherShip.positions.some(p => p.x === posX && p.y === posY)) {
                         valid = false;
                         break;
                     }
                 }
-                
                 if (!valid) break;
             }
-            
             if (valid) {
-                shipsArray.push({
-                    name: ship.name,
-                    size: ship.size,
-                    positions: positions,
-                    hits: new Set()
-                });
+                shipsArray.push({ name: ship.name, size: ship.size, positions, hits: new Set() });
                 placed = true;
             }
         }
     }
 }
 
-// Atualiza os grids visuais
 function updateGrids() {
-    // Limpa grids
     for (let y = 1; y <= BOARD_SIZE; y++) {
         for (let x = 1; x <= BOARD_SIZE; x++) {
-            const attackIndex = y * (BOARD_SIZE + 1) + x;
-            const shipIndex = y * (BOARD_SIZE + 1) + x;
-            
-            const attackCell = attackGrid.children[attackIndex];
-            const shipCell = shipGrid.children[shipIndex];
-            
-            // Resetar células
+            const idx = y * (BOARD_SIZE + 1) + x;
+            const attackCell = attackGrid.children[idx];
+            const shipCell = shipGrid.children[idx];
             attackCell.className = 'cell';
             attackCell.textContent = '·';
             shipCell.className = 'cell';
             shipCell.textContent = '·';
-            
-            // Mostrar ataques do jogador
-            const attackKey = `${x},${y}`;
-            if (gameState.playerAttacks.has(attackKey)) {
-                // Verificar se acertou algum navio do computador
+            const key = `${x},${y}`;
+            if (gameState.playerAttacks.has(key)) {
                 let hit = false;
                 for (const ship of gameState.computerShips) {
                     if (ship.positions.some(p => p.x === x && p.y === y)) {
                         hit = true;
+                        attackCell.className = 'cell hit';
+                        attackCell.textContent = 'X';
                         break;
                     }
                 }
-                
-                if (hit) {
-                    attackCell.className = 'cell hit';
-                    attackCell.textContent = 'X';
-                } else {
+                if (!hit) {
                     attackCell.className = 'cell miss';
                     attackCell.textContent = 'O';
                 }
             }
-            
-            // Mostrar navios e ataques do computador (apenas para debug)
             for (const ship of gameState.playerShips) {
                 if (ship.positions.some(p => p.x === x && p.y === y)) {
                     shipCell.className = 'cell ship';
                     shipCell.textContent = '#';
                 }
             }
-            
-            const computerAttackKey = `${x},${y}`;
-            if (gameState.computerAttacks.has(computerAttackKey)) {
-                // Verificar se acertou algum navio do jogador
+            if (gameState.computerAttacks.has(key)) {
                 let hit = false;
                 for (const ship of gameState.playerShips) {
                     if (ship.positions.some(p => p.x === x && p.y === y)) {
                         hit = true;
-                        ship.hits.add(computerAttackKey);
+                        ship.hits.add(key);
+                        shipCell.className = 'cell hit';
+                        shipCell.textContent = 'X';
                         break;
                     }
                 }
-                
-                if (hit) {
-                    shipCell.className = 'cell hit';
-                    shipCell.textContent = 'X';
-                } else {
+                if (!hit) {
                     shipCell.className = 'cell miss';
                     shipCell.textContent = 'O';
                 }
@@ -209,114 +191,109 @@ function updateGrids() {
     }
 }
 
-// Processa ataque do jogador
-function playerAttack(x, y) {
-    if (gameState.gameOver) return;
-    
-    const attackKey = `${x},${y}`;
-    
-    // Verifica se já atacou no lugar
-    if (gameState.playerAttacks.has(attackKey)) {
-        gameStatus.textContent = `Você já atacou (${x},${y})! Tente outra coordenada.`;
-        return false;
-    }
-    
-    // Registra ataque
-    gameState.playerAttacks.add(attackKey);
-    
-    // Verifica se acertou algum navio
-    let hit = false;
-    let sunkShip = null;
-    
-    for (const ship of gameState.computerShips) {
-        if (ship.positions.some(p => p.x === x && p.y === y)) {
-            hit = true;
-            ship.hits.add(attackKey);
-            
-            // Verifica se afundou o navio
-            if (ship.hits.size === ship.positions.length) {
-                sunkShip = ship;
+function updateHistory() {
+    const attacks = Array.from(gameState.playerAttacks);
+    const hits = [];
+    const misses = [];
+
+    for (const coord of attacks) {
+        let isHit = false;
+        for (const ship of gameState.computerShips) {
+            if (ship.positions.some(p => `${p.x},${p.y}` === coord)) {
+                isHit = true;
+                break;
             }
-            break;
+        }
+        if (isHit) {
+            hits.push(coord);
+        } else {
+            misses.push(coord);
         }
     }
-    
-    // Atualiza display
-    updateGrids();
-    
-    // Verifica vitória
-    const allComputerShipsSunk = gameState.computerShips.every(ship => 
-        ship.hits.size === ship.positions.length
-    );
-    
-    if (allComputerShipsSunk) {
-        gameState.gameOver = true;
-        gameStatus.textContent = "★ Parabéns! Você afundou todos os navios do computador! ★";
-        return true;
-    }
-    
-    // Dar feedback
-    if (sunkShip) {
-        gameStatus.textContent = `Você afundou o ${sunkShip.name} do computador!`;
-    } else if (hit) {
-        gameStatus.textContent = `Acertou em (${x},${y})!`;
-    } else {
-        gameStatus.textContent = `Água em (${x},${y}).`;
-    }
-    
-    return true;
+
+    historyAll.textContent = `{ ${attacks.join(' ; ')} }`;
+    historyHits.textContent = `{ ${hits.join(' ; ')} }`;
+    historyMisses.textContent = `{ ${misses.join(' ; ')} }`;
 }
 
-// Processar ataque (IA simples)
+
 function computerAttack() {
     if (gameState.gameOver) return;
-    
-    let x, y, attackKey;
-    
-    // IA simples: atacar aleatoriamente
-    do {
-        x = Math.floor(Math.random() * BOARD_SIZE) + 1;
-        y = Math.floor(Math.random() * BOARD_SIZE) + 1;
-        attackKey = `${x},${y}`;
-    } while (gameState.computerAttacks.has(attackKey));
-    
-    // Registra ataque
-    gameState.computerAttacks.add(attackKey);
-    
-    // Verificar se acertou algum navio
-    // Arummar IA para quando acertar algum navio continuar atirando em volta para tentar afundar o navio
-    // (não implementado nesta versão)
+
+    let x, y, key;
+
+    if (difficulty === 'hard' && gameState.huntTargets.length > 0) {
+        const next = gameState.huntTargets.shift();
+        x = next.x;
+        y = next.y;
+        key = `${x},${y}`;
+    } else if (difficulty === 'medium') {
+        do {
+            x = Math.floor(Math.random() * BOARD_SIZE) + 1;
+            y = Math.floor(Math.random() * BOARD_SIZE) + 1;
+            key = `${x},${y}`;
+        } while (
+            gameState.computerAttacks.has(key) ||
+            gameState.lastMisses.includes(key)
+        );
+    } else {
+        do {
+            x = Math.floor(Math.random() * BOARD_SIZE) + 1;
+            y = Math.floor(Math.random() * BOARD_SIZE) + 1;
+            key = `${x},${y}`;
+        } while (gameState.computerAttacks.has(key));
+    }
+
+    gameState.computerAttacks.add(key);
     let hit = false;
     let sunkShip = null;
-    
+
     for (const ship of gameState.playerShips) {
         if (ship.positions.some(p => p.x === x && p.y === y)) {
             hit = true;
-            ship.hits.add(attackKey);
-            
-            // Verificar se afundou o navio
+            ship.hits.add(key);
+
+            if (difficulty === 'hard') {
+                const neighbors = [
+                    { x: x + 1, y }, { x: x - 1, y },
+                    { x, y: y + 1 }, { x, y: y - 1 }
+                ];
+                for (const pos of neighbors) {
+                    const adjKey = `${pos.x},${pos.y}`;
+                    if (
+                        pos.x >= 1 && pos.x <= BOARD_SIZE &&
+                        pos.y >= 1 && pos.y <= BOARD_SIZE &&
+                        !gameState.computerAttacks.has(adjKey) &&
+                        !gameState.huntTargets.some(p => p.x === pos.x && p.y === pos.y)
+                    ) {
+                        gameState.huntTargets.push(pos);
+                    }
+                }
+            }
+
             if (ship.hits.size === ship.positions.length) {
                 sunkShip = ship;
+                if (difficulty === 'hard') gameState.huntTargets = [];
             }
+
             break;
         }
     }
-    
-    // Atualiza display
+
+    if (!hit && difficulty === 'medium') {
+        gameState.lastMisses.push(key);
+        if (gameState.lastMisses.length > 5) gameState.lastMisses.shift();
+    }
+
     updateGrids();
-    
-    // Verificar derrota
-    const allPlayerShipsSunk = gameState.playerShips.every(ship => 
-        ship.hits.size === ship.positions.length
-    );
-    
-    if (allPlayerShipsSunk) {
+
+    const allSunk = gameState.playerShips.every(s => s.hits.size === s.positions.length);
+    if (allSunk) {
         gameState.gameOver = true;
-        gameStatus.textContent = "☠️ O computador afundou todos os seus navios! ☠️";
+        gameStatus.textContent += " ☠️ O computador afundou todos os seus navios!";
         return;
     }
-    
-    // log
+
     if (sunkShip) {
         gameStatus.textContent += ` O computador afundou seu ${sunkShip.name}!`;
     } else if (hit) {
@@ -326,71 +303,90 @@ function computerAttack() {
     }
 }
 
-// entrada de coordenadas
+function playerAttack(x, y) {
+    if (gameState.gameOver) return;
+    const key = `${x},${y}`;
+    if (gameState.playerAttacks.has(key)) {
+        gameStatus.textContent = `Você já atacou (${x},${y})!`;
+        return false;
+    }
+
+    updateHistory();
+
+
+    gameState.playerAttacks.add(key);
+    let hit = false;
+    let sunkShip = null;
+
+    for (const ship of gameState.computerShips) {
+        if (ship.positions.some(p => p.x === x && p.y === y)) {
+            hit = true;
+            ship.hits.add(key);
+            gameState.hits++;
+            if (ship.hits.size === ship.positions.length) {
+                sunkShip = ship;
+                gameState.sunkShips.push(ship.name);
+            }
+            break;
+        }
+    }
+
+    if (!hit) gameState.misses++;
+
+    updateGrids();
+
+    const allSunk = gameState.computerShips.every(s => s.hits.size === s.positions.length);
+    if (allSunk) {
+        gameState.gameOver = true;
+        gameStatus.textContent = "★ Você venceu! Todos os navios foram afundados!";
+        return true;
+    }
+
+    if (sunkShip) {
+        gameStatus.textContent = `Você afundou o ${sunkShip.name}!`;
+    } else if (hit) {
+        gameStatus.textContent = `Acertou em (${x},${y})!`;
+    } else {
+        gameStatus.textContent = `Água em (${x},${y}).`;
+    }
+
+    return true;
+}
+
 function parseCoordinate(input) {
-    // Remove espaços e converte para maiúsculas
     input = input.trim().toUpperCase();
-    
-    // Padrões aceitos: (x,y), x,y, A1, A 1, 
     const match = input.match(/^(?:\(?\s*([A-J]|\d+)\s*[, ]\s*([A-J]|\d+)\s*\)?|([A-J])\s*(\d+))$/);
-    
     if (!match) return null;
-    
     let x, y;
-    
-    if (match[3]) { // Formato A1
+    if (match[3]) {
         x = match[3].charCodeAt(0) - 64;
         y = parseInt(match[4]);
-    } else { // Formato (x,y)
-        if (isNaN(match[1])) {
-            x = match[1].charCodeAt(0) - 64;
-        } else {
-            x = parseInt(match[1]);
-        }
-        
-        if (isNaN(match[2])) {
-            y = match[2].charCodeAt(0) - 64;
-        } else {
-            y = parseInt(match[2]);
-        }
+    } else {
+        x = isNaN(match[1]) ? match[1].charCodeAt(0) - 64 : parseInt(match[1]);
+        y = isNaN(match[2]) ? match[2].charCodeAt(0) - 64 : parseInt(match[2]);
     }
-    
-    // Validar coordenadas
-    if (x < 1 || x > BOARD_SIZE || y < 1 || y > BOARD_SIZE) {
-        return null;
-    }
-    
+    if (x < 1 || x > BOARD_SIZE || y < 1 || y > BOARD_SIZE) return null;
     return { x, y };
 }
 
-// Event Listeners
 attackBtn.addEventListener('click', () => {
     const input = coordinateInput.value;
     const coord = parseCoordinate(input);
-    
     if (!coord) {
-        gameStatus.textContent = "Coordenada inválida! Use formato (x,y) ou A1 (ex: (3,5) ou C7)";
+        gameStatus.textContent = "Coordenada inválida! Use (x,y) ou A1.";
         return;
     }
-    
     if (playerAttack(coord.x, coord.y)) {
-        // Só permite ataque do computador se o jogo não acabou
-        if (!gameState.gameOver) {
-            setTimeout(computerAttack, 1000);
-        }
+        if (!gameState.gameOver) setTimeout(computerAttack, 1000);
     }
-    
     coordinateInput.value = '';
     coordinateInput.focus();
 });
 
 coordinateInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        attackBtn.click();
-    }
+    if (e.key === 'Enter') attackBtn.click();
 });
 
 restartBtn.addEventListener('click', initGame);
 
-// Iniciar o jogo
 initGame();
